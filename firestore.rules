@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /players/{uid} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasAll(['displayName', 'bestScore'])
+        && request.resource.data.bestScore is int
+        && request.resource.data.bestScore >= 0;
+      allow delete: if false;
+    }
+  }
+}

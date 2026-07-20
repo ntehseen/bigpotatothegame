@@ -35,6 +35,13 @@
     if (Mario.runOver) return;
     Mario.runOver = true;
     Mario.runFinalScore = player.score || 0;
+    if (Mario.scores && Mario.scores.submit) {
+      Mario.scores.submit(Mario.runFinalScore).catch(function(err) {
+        console.warn('[BIG POTATO] score submission failed', err);
+      });
+    }
+    var scoresButton = document.getElementById('bp-run-scores');
+    if (scoresButton) scoresButton.hidden = false;
     if (music) {
       if (music.overworld) music.overworld.pause();
       if (music.underground) music.underground.pause();

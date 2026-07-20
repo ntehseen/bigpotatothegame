@@ -1,94 +1,96 @@
 ﻿<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-
-    <!-- The actual resolution of the NES is 256x240.
-         Ideally, we draw in this size and scale appropriately.-->
-    <title>BIG POTATO</title>
-    <meta name="description" content="BIG POTATO — a desert platformer">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/game.css?v=37">
-  </head>
-  <body>
-    <div class="game-screen">
-      <header class="game-brand">
-        <h1>BIG POTATO</h1>
-        <p class="tagline">Endless run across Dunes, Tomb, Bazaar, Field & Grotto. Score never sleeps.</p>
-      </header>
-
-      <div class="game-frame" id="game-frame"></div>
-
-      <footer class="game-hud-legend">
-        <div class="legend-row">
-          <span><kbd>←</kbd><kbd>→</kbd> Move</span>
-          <span><kbd>X</kbd> Jump</span>
-          <span><kbd>Z</kbd> Shoot</span>
-          <span><kbd>↓</kbd> Crouch / Pipe</span>
-          <span><kbd>Enter</kbd> Pause</span>
-        </div>
-        <p class="hint">Endless loop · Flags & pipes jump to new worlds · Death = final score</p>
-      </footer>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>BIG POTATO</title>
+  <meta name="description" content="BIG POTATO — a desert platformer">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/game.css?v=42">
+</head>
+<body>
+  <div id="bp-loading" class="bp-loading" role="status" aria-live="polite">
+    <div class="bp-loading-card">
+      <img src="assets/ui/loading.png" alt="BIG POTATO" class="bp-loading-art">
+      <h1>BIG POTATO</h1>
+      <p>Loading the desert… <span id="bp-load-pct">0%</span></p>
+      <div class="bp-load-track"><span id="bp-load-fill"></span></div>
     </div>
+  </div>
 
-    <!-- core -->
-    <script type="text/javascript" src="js/core/util.js?v=37"></script>
-    <script type="text/javascript" src="js/core/input.js?v=37"></script>
-    <script type="text/javascript" src="js/core/responsive.js?v=37"></script>
-    <script type="text/javascript" src="js/core/touch-controls.js?v=37"></script>
-    <script type="text/javascript" src="js/core/resources.js?v=37"></script>
-    <script type="text/javascript" src="js/player/bigpotato-anims.js?v=37"></script>
-    <script type="text/javascript" src="js/enemies/enemy-anims.js?v=37"></script>
-    <script type="text/javascript" src="js/core/sprite.js?v=37"></script>
-    <script type="text/javascript" src="js/core/entity.js?v=37"></script>
+  <div class="game-screen">
+    <header class="game-brand">
+      <h1>BIG POTATO</h1>
+      <p class="tagline">Endless run across Dunes, Tomb, Bazaar, Field & Grotto. Score never sleeps.</p>
+    </header>
+    <div class="game-frame" id="game-frame"></div>
+    <button id="bp-run-scores" class="bp-run-scores" type="button" hidden>View leaderboard</button>
+    <footer class="game-hud-legend">
+      <div class="legend-row">
+        <span><kbd>←</kbd><kbd>→</kbd> Move</span><span><kbd>X</kbd> Jump</span>
+        <span><kbd>Z</kbd> Shoot</span><span><kbd>↓</kbd> Crouch / Pipe</span><span><kbd>Enter</kbd> Pause</span>
+      </div>
+      <p class="hint">Endless loop · Flags & pipes jump to new worlds · Death = final score</p>
+    </footer>
+  </div>
 
-    <!-- world props / blocks -->
-    <script type="text/javascript" src="js/world/pipe.js?v=37"></script>
+  <section id="bp-hub" class="bp-overlay" hidden aria-hidden="true">
+    <div class="bp-card">
+      <img src="assets/ui/loading.png" alt="" class="bp-card-art">
+      <h2>Welcome to BIG POTATO</h2>
+      <p id="bp-card-sub">Sign in to save scores — or play as guest anytime.</p>
+      <p id="bp-auth-error" class="bp-message bp-error" hidden></p>
+      <p id="bp-auth-note" class="bp-message">Firebase is unavailable; guest play is ready.</p>
+      <div id="bp-user-chip" class="bp-user-chip" hidden><img id="bp-user-avatar" alt=""><span id="bp-user-name">Guest</span></div>
+      <div id="bp-login-actions" class="bp-actions">
+        <button id="bp-btn-google" type="button">Continue with Google</button>
+        <button id="bp-btn-discord" type="button">Continue with Discord</button>
+      </div>
+      <div class="bp-actions">
+        <button id="bp-play-btn" type="button" hidden>Play</button>
+        <button id="bp-guest-btn" type="button">Play as Guest</button>
+        <button id="bp-profile-btn" type="button">Edit Profile</button>
+        <button id="bp-scores-btn" type="button">Leaderboard</button>
+        <button id="bp-signout-btn" type="button" hidden>Sign out</button>
+      </div>
+    </div>
+  </section>
 
-    <!-- items -->
-    <script type="text/javascript" src="js/items/mushroom.js?v=37"></script>
-    <script type="text/javascript" src="js/items/fireflower.js?v=37"></script>
-    <script type="text/javascript" src="js/items/star.js?v=37"></script>
-    <script type="text/javascript" src="js/items/fireball.js?v=37"></script>
-    <script type="text/javascript" src="js/items/coin.js?v=37"></script>
-    <script type="text/javascript" src="js/items/bcoin.js?v=37"></script>
-    <script type="text/javascript" src="js/items/loot.js?v=37"></script>
+  <section id="bp-profile" class="bp-overlay" hidden aria-hidden="true">
+    <div class="bp-card">
+      <h2>Edit profile</h2>
+      <div class="bp-profile-preview"><img id="bp-profile-preview-img" alt="Avatar"><strong id="bp-profile-preview-name">Player</strong></div>
+      <label>Display name <input id="bp-profile-name" type="text" maxlength="18" autocomplete="nickname"></label>
+      <p>Choose an avatar</p><div id="bp-avatar-presets" class="bp-presets"></div>
+      <label class="bp-file-label">Upload image <input id="bp-profile-file" type="file" accept="image/*"></label>
+      <p id="bp-profile-msg" class="bp-message" hidden></p>
+      <div class="bp-actions"><button id="bp-profile-save" type="button">Save profile</button><button id="bp-profile-reset" type="button">Reset</button><button id="bp-profile-back" type="button">Back</button></div>
+    </div>
+  </section>
 
-    <!-- enemies -->
-    <script type="text/javascript" src="js/enemies/goomba.js?v=37"></script>
-    <script type="text/javascript" src="js/enemies/koopa.js?v=37"></script>
-    <script type="text/javascript" src="js/enemies/mob.js?v=37"></script>
+  <section id="bp-leaderboard" class="bp-overlay" hidden aria-hidden="true">
+    <div class="bp-card">
+      <h2>Leaderboard</h2><p id="bp-lb-status" class="bp-message"></p>
+      <ol id="bp-lb-list" class="bp-lb-list"></ol>
+      <div class="bp-actions"><button id="bp-lb-refresh" type="button">Refresh</button><button id="bp-lb-back" type="button">Back</button></div>
+    </div>
+  </section>
 
-    <!-- world continued -->
-    <script type="text/javascript" src="js/world/floor.js?v=37"></script>
-    <script type="text/javascript" src="js/world/block.js?v=37"></script>
-    <script type="text/javascript" src="js/world/rubble.js?v=37"></script>
-    <script type="text/javascript" src="js/world/prop.js?v=37"></script>
-
-    <!-- player / scoring / run -->
-    <script type="text/javascript" src="js/player/player.js?v=37"></script>
-    <script type="text/javascript" src="js/world/flag.js?v=37"></script>
-    <script type="text/javascript" src="js/core/score.js?v=37"></script>
-    <script type="text/javascript" src="js/core/run.js?v=37"></script>
-    <script type="text/javascript" src="js/core/worlds.js?v=37"></script>
-
-    <!-- levels -->
-    <script type="text/javascript" src="js/levels/level.js?v=37"></script>
-    <script type="text/javascript" src="js/levels/kits.js?v=37"></script>
-    <script type="text/javascript" src="js/levels/world-kits.js?v=37"></script>
-    <script type="text/javascript" src="js/levels/11.js?v=37"></script>
-    <script type="text/javascript" src="js/levels/11tunnel.js?v=37"></script>
-    <script type="text/javascript" src="js/levels/12.js?v=37"></script>
-    <script type="text/javascript" src="js/levels/13.js?v=37"></script>
-
-    <!-- boot -->
-    <script type="text/javascript" src="js/core/game.js?v=37"></script>
-  </body>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="js/core/firebase-config.js?v=42"></script>
+  <script src="js/core/util.js?v=42"></script><script src="js/core/input.js?v=42"></script><script src="js/core/responsive.js?v=42"></script><script src="js/core/touch-controls.js?v=42"></script><script src="js/core/resources.js?v=42"></script>
+  <script src="js/player/bigpotato-anims.js?v=42"></script><script src="js/enemies/enemy-anims.js?v=42"></script><script src="js/core/sprite.js?v=42"></script><script src="js/core/entity.js?v=42"></script>
+  <script src="js/world/pipe.js?v=42"></script><script src="js/items/mushroom.js?v=42"></script><script src="js/items/fireflower.js?v=42"></script><script src="js/items/star.js?v=42"></script><script src="js/items/fireball.js?v=42"></script><script src="js/items/coin.js?v=42"></script><script src="js/items/bcoin.js?v=42"></script><script src="js/items/loot.js?v=42"></script>
+  <script src="js/enemies/goomba.js?v=42"></script><script src="js/enemies/koopa.js?v=42"></script><script src="js/enemies/mob.js?v=42"></script><script src="js/world/floor.js?v=42"></script><script src="js/world/block.js?v=42"></script><script src="js/world/rubble.js?v=42"></script><script src="js/world/prop.js?v=42"></script>
+  <script src="js/player/player.js?v=42"></script><script src="js/world/flag.js?v=42"></script><script src="js/core/score.js?v=42"></script><script src="js/core/run.js?v=42"></script><script src="js/core/worlds.js?v=42"></script>
+  <script src="js/levels/level.js?v=42"></script><script src="js/levels/kits.js?v=42"></script><script src="js/levels/world-kits.js?v=42"></script><script src="js/levels/11.js?v=42"></script><script src="js/levels/11tunnel.js?v=42"></script><script src="js/levels/12.js?v=42"></script><script src="js/levels/13.js?v=42"></script>
+  <script src="js/core/auth.js?v=42"></script><script src="js/core/profile.js?v=42"></script><script src="js/core/scores-api.js?v=42"></script><script src="js/core/ui.js?v=42"></script><script src="js/core/game.js?v=42"></script>
+</body>
 </html>

@@ -232,16 +232,69 @@ resources.load([
   'sprites/enemies/satyr/attack.png',
   'sprites/enemies/satyr/die.png',
   'sprites/enemies/satyr/jump.png',
+  'sounds/aboveground_bgm.ogg',
+  'sounds/underground_bgm.ogg',
+  'sounds/stage_clear.wav',
+  'sounds/bigpotato_dead.wav?v=37',
+  'sounds/bigpotato_jump.wav?v=37',
+  'sounds/breakblock.wav',
+  'sounds/bump.wav',
+  'sounds/coin.wav',
+  'sounds/fireball.wav',
+  'sounds/flagpole.wav',
+  'sounds/kick.wav',
+  'sounds/pipe.wav',
+  'sounds/itemAppear.wav',
+  'sounds/powerup.wav',
+  'sounds/stomp.wav'
 ]);
 
-resources.onReady(function() {
-  var start = function() { init(); };
-  if (document.fonts && document.fonts.load) {
-    document.fonts.load('700 10px Fredoka').then(start).catch(start);
-  } else {
-    start();
+var bootDone = false;
+var gameStarted = false;
+var hubShown = false;
+
+function showHubWhenReady() {
+  if (hubShown || !Mario.ui) return;
+  hubShown = true;
+  Mario.ui.hideLoading();
+  Mario.ui.showHub();
+}
+
+function bootAfterLoad() {
+  if (bootDone) return;
+  bootDone = true;
+  try {
+    init();
+    if (Mario.ui) {
+      Mario.ui.bind();
+      Mario.ui.setLoadingProgress(100);
+    }
+    if (Mario.auth) {
+      Mario.auth.init();
+      Mario.auth.onReady(function(user) {
+        if (user && Mario.profile && Mario.profile.loadFromCloud) {
+          Mario.profile.loadFromCloud().then(showHubWhenReady).catch(showHubWhenReady);
+        } else {
+          showHubWhenReady();
+        }
+      });
+    } else {
+      showHubWhenReady();
+    }
+  } catch (err) {
+    console.error('[BIG POTATO] boot failed', err);
+    showHubWhenReady();
   }
+  // Authentication or a cloud profile must never leave the game behind loading.
+  setTimeout(showHubWhenReady, 3500);
+}
+
+resources.onProgress(function(percent) {
+  if (Mario.ui && Mario.ui.setLoadingProgress) Mario.ui.setLoadingProgress(percent);
 });
+resources.onReady(bootAfterLoad);
+// A missing asset should not strand the player on the loading screen.
+setTimeout(bootAfterLoad, 15000);
 var level;
 var sounds;
 var music;
@@ -270,15 +323,24 @@ function init() {
     stomp: new Audio('sounds/stomp.wav')
   };
   Mario.COURSES = [Mario.oneone, Mario.onetwo, Mario.onethree];
-  Mario.startRun();
-  if (Mario.initTouchControls) Mario.initTouchControls();
-  if (Mario.startResponsiveStage) Mario.startResponsiveStage();
-  lastTime = Date.now();
   window.addEventListener('blur', function() {
     if (!Mario.runOver && !paused) setPaused(true);
   });
-  main();
 }
+
+Mario.beginPlay = function() {
+  if (!bootDone) return;
+  Mario.startRun();
+  paused = false;
+  musicPausedTrack = null;
+  lastTime = Date.now();
+  if (!gameStarted) {
+    gameStarted = true;
+    if (Mario.initTouchControls) Mario.initTouchControls();
+    if (Mario.startResponsiveStage) Mario.startResponsiveStage();
+    main();
+  }
+};
 
 var gameTime = 0;
 var paused = false;
@@ -305,6 +367,8 @@ function handlePauseInput() {
   if (Mario.runOver) {
     if (down && !pauseHeld) {
       Mario.startRun();
+      var scoresButton = document.getElementById('bp-run-scores');
+      if (scoresButton) scoresButton.hidden = true;
       paused = false;
       musicPausedTrack = null;
       lastTime = Date.now();
@@ -659,7 +723,11 @@ function renderHud() {
   var world = (level && level.world) ? level.world : '1-1';
   var score = player.score || 0;
   var coins = player.coins || 0;
-  var icon = resources.get('sprites/bigpotato-hud.png');
+  var profile = Mario.profile && Mario.profile.get ? Mario.profile.get() : { displayName: 'POTATO' };
+  var icon = Mario.profile && Mario.profile.getAvatarImage
+    ? Mario.profile.getAvatarImage()
+    : resources.get('sprites/bigpotato-hud.png');
+  var playerName = String(profile.displayName || 'POTATO').toUpperCase().slice(0, 12);
   var gem = resources.get('sprites/desert/gem.png');
 
   ctx.save();
@@ -682,7 +750,7 @@ function renderHud() {
     ctx.drawImage(icon, 9, 8, 18, 18);
     ctx.restore();
   }
-  drawHudLabel('POTATO', 30, 5, '#7a2f6e');
+  drawHudLabel(playerName, 30, 5, '#7a2f6e');
   drawHudValue(padScore(score, 6), 30, 13, '#4a2040');
 
   // —— Coin (gold)
