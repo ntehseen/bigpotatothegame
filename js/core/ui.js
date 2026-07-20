@@ -101,6 +101,7 @@
     document.body.classList.add('bp-hub-open');
     showOverlay('bp-hub');
     renderUserChip(Mario.auth && Mario.auth.user);
+    if (typeof syncRunActions === 'function') syncRunActions(true);
   }
 
   function fillProfileForm() {
@@ -198,6 +199,7 @@
     }
     hideOverlays();
     if (typeof Mario.beginPlay === 'function') Mario.beginPlay();
+    if (typeof syncRunActions === 'function') syncRunActions();
   }
 
   function bind() {
@@ -211,6 +213,7 @@
     var back = $('bp-lb-back');
     var refresh = $('bp-lb-refresh');
     var runScores = $('bp-run-scores');
+    var quitBtn = $('bp-quit-btn');
     var profileBack = $('bp-profile-back');
     var profileSave = $('bp-profile-save');
     var profileReset = $('bp-profile-reset');
@@ -268,6 +271,11 @@
     if (back) back.addEventListener('click', function() { showHub(); });
     if (refresh) refresh.addEventListener('click', function() { showLeaderboard(); });
     if (runScores) runScores.addEventListener('click', function() { showLeaderboard(); });
+    if (quitBtn) {
+      quitBtn.addEventListener('click', function() {
+        if (typeof Mario.quitToHub === 'function') Mario.quitToHub();
+      });
+    }
     if (profileBack) profileBack.addEventListener('click', function() { showHub(); });
 
     if (nameInput) {

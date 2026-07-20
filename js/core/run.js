@@ -42,6 +42,11 @@
     }
     var scoresButton = document.getElementById('bp-run-scores');
     if (scoresButton) scoresButton.hidden = false;
+    if (typeof syncRunActions === 'function') syncRunActions();
+    else {
+      var wrap = document.getElementById('bp-run-actions');
+      if (wrap) wrap.hidden = false;
+    }
     if (music) {
       if (music.overworld) music.overworld.pause();
       if (music.underground) music.underground.pause();

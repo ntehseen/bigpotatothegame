@@ -334,6 +334,7 @@ Mario.beginPlay = function() {
   paused = false;
   musicPausedTrack = null;
   lastTime = Date.now();
+  syncRunActions();
   if (!gameStarted) {
     gameStarted = true;
     if (Mario.initTouchControls) Mario.initTouchControls();
@@ -342,9 +343,42 @@ Mario.beginPlay = function() {
   }
 };
 
+Mario.quitToHub = function() {
+  // Freeze the run under the hub without resubmitting a death score.
+  if (!Mario.runOver) {
+    Mario.runOver = true;
+    Mario.runFinalScore = (player && player.score) || 0;
+  }
+  paused = false;
+  musicPausedTrack = null;
+  if (music) {
+    ['overworld', 'underground', 'death', 'clear'].forEach(function(key) {
+      if (music[key]) {
+        music[key].pause();
+        try { music[key].currentTime = 0; } catch (e) {}
+      }
+    });
+  }
+  if (typeof input !== 'undefined' && input.reset) input.reset();
+  syncRunActions(true);
+  if (Mario.ui && Mario.ui.showHub) Mario.ui.showHub();
+};
+
+function syncRunActions(forceHide) {
+  var wrap = document.getElementById('bp-run-actions');
+  var scoresButton = document.getElementById('bp-run-scores');
+  var quitButton = document.getElementById('bp-quit-btn');
+  var hubOpen = document.body.classList.contains('bp-hub-open');
+  var show = !forceHide && !hubOpen && (paused || Mario.runOver);
+  if (wrap) wrap.hidden = !show;
+  if (scoresButton) scoresButton.hidden = !(show && Mario.runOver);
+  if (quitButton) quitButton.hidden = !show;
+}
+
 var gameTime = 0;
 var paused = false;
 var pauseHeld = false;
+var quitHeld = false;
 var musicPausedTrack = null;
 
 //set up the game loop
@@ -363,15 +397,22 @@ function main() {
 }
 
 function handlePauseInput() {
+  var quitDown = input.isDown('Q');
+  if ((paused || Mario.runOver) && quitDown && !quitHeld) {
+    quitHeld = true;
+    Mario.quitToHub();
+    return;
+  }
+  quitHeld = !!quitDown;
+
   var down = input.isDown('PAUSE') || (Mario.runOver && input.isDown('JUMP'));
   if (Mario.runOver) {
     if (down && !pauseHeld) {
       Mario.startRun();
-      var scoresButton = document.getElementById('bp-run-scores');
-      if (scoresButton) scoresButton.hidden = true;
       paused = false;
       musicPausedTrack = null;
       lastTime = Date.now();
+      syncRunActions();
     }
     pauseHeld = !!down;
     return;
@@ -403,6 +444,7 @@ function setPaused(value) {
     musicPausedTrack = null;
     lastTime = Date.now();
   }
+  syncRunActions();
 }
 
 function update(dt) {
@@ -685,15 +727,15 @@ function renderPauseOverlay() {
   ctx.save();
   ctx.fillStyle = 'rgba(74, 32, 64, 0.4)';
   ctx.fillRect(0, 0, 256, 240);
-  drawHudPlaque(58, 88, 140, 56, '#fff7fb', '#ffc2e0', '#ff4fa3');
+  drawHudPlaque(58, 82, 140, 68, '#fff7fb', '#ffc2e0', '#ff4fa3');
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = 'bold 16px ' + HUD_FONT;
   ctx.fillStyle = '#5c1f55';
-  ctx.fillText('Paused', 128, 108);
-  ctx.font = 'bold 8px ' + HUD_FONT;
+  ctx.fillText('Paused', 128, 104);
+  ctx.font = 'bold 7px ' + HUD_FONT;
   ctx.fillStyle = '#d63384';
-  ctx.fillText('Press Enter', 128, 126);
+  ctx.fillText('Enter resume · Q quit', 128, 126);
   ctx.restore();
 }
 
@@ -701,21 +743,21 @@ function renderRunOverOverlay() {
   ctx.save();
   ctx.fillStyle = 'rgba(74, 32, 64, 0.48)';
   ctx.fillRect(0, 0, 256, 240);
-  drawHudPlaque(40, 70, 176, 100, '#fff7fb', '#ffb6d9', '#ff4fa3');
+  drawHudPlaque(40, 64, 176, 112, '#fff7fb', '#ffb6d9', '#ff4fa3');
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = 'bold 16px ' + HUD_FONT;
   ctx.fillStyle = '#7a2f6e';
-  ctx.fillText('Run Over', 128, 92);
+  ctx.fillText('Run Over', 128, 86);
   ctx.font = 'bold 8px ' + HUD_FONT;
   ctx.fillStyle = '#d63384';
-  ctx.fillText('Score', 128, 112);
+  ctx.fillText('Score', 128, 106);
   ctx.font = 'bold 18px ' + HUD_FONT;
   ctx.fillStyle = '#5c1f55';
-  ctx.fillText(padScore(Mario.runFinalScore || 0, 6), 128, 132);
+  ctx.fillText(padScore(Mario.runFinalScore || 0, 6), 128, 126);
   ctx.font = 'bold 7px ' + HUD_FONT;
   ctx.fillStyle = '#a84a90';
-  ctx.fillText('Enter to run again', 128, 152);
+  ctx.fillText('Enter retry · Q quit', 128, 152);
   ctx.restore();
 }
 

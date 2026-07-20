@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>BIG POTATO</title>
-  <meta name="description" content="BIG POTATO — a desert platformer">
+  <meta name="description" content="BIG POTATO THE GAME">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -11,14 +11,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/game.css?v=42">
+  <link rel="stylesheet" href="css/game.css?v=43">
 </head>
 <body>
   <div id="bp-loading" class="bp-loading" role="status" aria-live="polite">
     <div class="bp-loading-card">
       <img src="assets/ui/loading.png" alt="BIG POTATO" class="bp-loading-art">
       <h1>BIG POTATO</h1>
-      <p>Loading the desert… <span id="bp-load-pct">0%</span></p>
+      <p>Loading.. . <span id="bp-load-pct">0%</span></p>
       <div class="bp-load-track"><span id="bp-load-fill"></span></div>
     </div>
   </div>
@@ -29,11 +29,15 @@
       <p class="tagline">Endless run across Dunes, Tomb, Bazaar, Field & Grotto. Score never sleeps.</p>
     </header>
     <div class="game-frame" id="game-frame"></div>
-    <button id="bp-run-scores" class="bp-run-scores" type="button" hidden>View leaderboard</button>
+    <div id="bp-run-actions" class="bp-run-actions" hidden>
+      <button id="bp-run-scores" class="bp-run-scores" type="button" hidden>View leaderboard</button>
+      <button id="bp-quit-btn" class="bp-quit-btn" type="button">Quit to menu</button>
+    </div>
     <footer class="game-hud-legend">
       <div class="legend-row">
         <span><kbd>←</kbd><kbd>→</kbd> Move</span><span><kbd>X</kbd> Jump</span>
         <span><kbd>Z</kbd> Shoot</span><span><kbd>↓</kbd> Crouch / Pipe</span><span><kbd>Enter</kbd> Pause</span>
+        <span><kbd>Q</kbd> Quit</span>
       </div>
       <p class="hint">Endless loop · Flags & pipes jump to new worlds · Death = final score</p>
     </footer>
@@ -84,13 +88,13 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-  <script src="js/core/firebase-config.js?v=42"></script>
-  <script src="js/core/util.js?v=42"></script><script src="js/core/input.js?v=42"></script><script src="js/core/responsive.js?v=42"></script><script src="js/core/touch-controls.js?v=42"></script><script src="js/core/resources.js?v=42"></script>
-  <script src="js/player/bigpotato-anims.js?v=42"></script><script src="js/enemies/enemy-anims.js?v=42"></script><script src="js/core/sprite.js?v=42"></script><script src="js/core/entity.js?v=42"></script>
-  <script src="js/world/pipe.js?v=42"></script><script src="js/items/mushroom.js?v=42"></script><script src="js/items/fireflower.js?v=42"></script><script src="js/items/star.js?v=42"></script><script src="js/items/fireball.js?v=42"></script><script src="js/items/coin.js?v=42"></script><script src="js/items/bcoin.js?v=42"></script><script src="js/items/loot.js?v=42"></script>
-  <script src="js/enemies/goomba.js?v=42"></script><script src="js/enemies/koopa.js?v=42"></script><script src="js/enemies/mob.js?v=42"></script><script src="js/world/floor.js?v=42"></script><script src="js/world/block.js?v=42"></script><script src="js/world/rubble.js?v=42"></script><script src="js/world/prop.js?v=42"></script>
-  <script src="js/player/player.js?v=42"></script><script src="js/world/flag.js?v=42"></script><script src="js/core/score.js?v=42"></script><script src="js/core/run.js?v=42"></script><script src="js/core/worlds.js?v=42"></script>
-  <script src="js/levels/level.js?v=42"></script><script src="js/levels/kits.js?v=42"></script><script src="js/levels/world-kits.js?v=42"></script><script src="js/levels/11.js?v=42"></script><script src="js/levels/11tunnel.js?v=42"></script><script src="js/levels/12.js?v=42"></script><script src="js/levels/13.js?v=42"></script>
-  <script src="js/core/auth.js?v=42"></script><script src="js/core/profile.js?v=42"></script><script src="js/core/scores-api.js?v=42"></script><script src="js/core/ui.js?v=42"></script><script src="js/core/game.js?v=42"></script>
+  <script src="js/core/firebase-config.js?v=43"></script>
+  <script src="js/core/util.js?v=43"></script><script src="js/core/input.js?v=43"></script><script src="js/core/responsive.js?v=43"></script><script src="js/core/touch-controls.js?v=43"></script><script src="js/core/resources.js?v=43"></script>
+  <script src="js/player/bigpotato-anims.js?v=43"></script><script src="js/enemies/enemy-anims.js?v=43"></script><script src="js/core/sprite.js?v=43"></script><script src="js/core/entity.js?v=43"></script>
+  <script src="js/world/pipe.js?v=43"></script><script src="js/items/mushroom.js?v=43"></script><script src="js/items/fireflower.js?v=43"></script><script src="js/items/star.js?v=43"></script><script src="js/items/fireball.js?v=43"></script><script src="js/items/coin.js?v=43"></script><script src="js/items/bcoin.js?v=43"></script><script src="js/items/loot.js?v=43"></script>
+  <script src="js/enemies/goomba.js?v=43"></script><script src="js/enemies/koopa.js?v=43"></script><script src="js/enemies/mob.js?v=43"></script><script src="js/world/floor.js?v=43"></script><script src="js/world/block.js?v=43"></script><script src="js/world/rubble.js?v=43"></script><script src="js/world/prop.js?v=43"></script>
+  <script src="js/player/player.js?v=43"></script><script src="js/world/flag.js?v=43"></script><script src="js/core/score.js?v=43"></script><script src="js/core/run.js?v=43"></script><script src="js/core/worlds.js?v=43"></script>
+  <script src="js/levels/level.js?v=43"></script><script src="js/levels/kits.js?v=43"></script><script src="js/levels/world-kits.js?v=43"></script><script src="js/levels/11.js?v=43"></script><script src="js/levels/11tunnel.js?v=43"></script><script src="js/levels/12.js?v=43"></script><script src="js/levels/13.js?v=43"></script>
+  <script src="js/core/auth.js?v=43"></script><script src="js/core/profile.js?v=43"></script><script src="js/core/scores-api.js?v=43"></script><script src="js/core/ui.js?v=43"></script><script src="js/core/game.js?v=43"></script>
 </body>
 </html>
