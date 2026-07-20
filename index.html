@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!-- The actual resolution of the NES is 256x240.
+         Ideally, we draw in this size and scale appropriately.-->
+    <title>BIG POTATO</title>
+    <meta name="description" content="BIG POTATO — a desert platformer">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/game.css?v=36">
+  </head>
+  <body>
+    <div class="game-screen">
+      <header class="game-brand">
+        <h1>BIG POTATO</h1>
+        <p class="tagline">Endless run across Dunes, Tomb, Bazaar, Field & Grotto. Score never sleeps.</p>
+      </header>
+
+      <div class="game-frame" id="game-frame"></div>
+
+      <footer class="game-hud-legend">
+        <div class="legend-row">
+          <span><kbd>←</kbd><kbd>→</kbd> Move</span>
+          <span><kbd>X</kbd> Jump</span>
+          <span><kbd>Z</kbd> Shoot</span>
+          <span><kbd>↓</kbd> Crouch / Pipe</span>
+          <span><kbd>Enter</kbd> Pause</span>
+        </div>
+        <p class="hint">Endless loop · Flags & pipes jump to new worlds · Death = final score</p>
+      </footer>
+    </div>
+
+    <!-- core -->
+    <script type="text/javascript" src="js/core/util.js?v=36"></script>
+    <script type="text/javascript" src="js/core/input.js?v=36"></script>
+    <script type="text/javascript" src="js/core/responsive.js?v=36"></script>
+    <script type="text/javascript" src="js/core/touch-controls.js?v=36"></script>
+    <script type="text/javascript" src="js/core/resources.js?v=36"></script>
+    <script type="text/javascript" src="js/player/bigpotato-anims.js?v=36"></script>
+    <script type="text/javascript" src="js/enemies/enemy-anims.js?v=36"></script>
+    <script type="text/javascript" src="js/core/sprite.js?v=36"></script>
+    <script type="text/javascript" src="js/core/entity.js?v=36"></script>
+
+    <!-- world props / blocks -->
+    <script type="text/javascript" src="js/world/pipe.js?v=36"></script>
+
+    <!-- items -->
+    <script type="text/javascript" src="js/items/mushroom.js?v=36"></script>
+    <script type="text/javascript" src="js/items/fireflower.js?v=36"></script>
+    <script type="text/javascript" src="js/items/star.js?v=36"></script>
+    <script type="text/javascript" src="js/items/fireball.js?v=36"></script>
+    <script type="text/javascript" src="js/items/coin.js?v=36"></script>
+    <script type="text/javascript" src="js/items/bcoin.js?v=36"></script>
+    <script type="text/javascript" src="js/items/loot.js?v=36"></script>
+
+    <!-- enemies -->
+    <script type="text/javascript" src="js/enemies/goomba.js?v=36"></script>
+    <script type="text/javascript" src="js/enemies/koopa.js?v=36"></script>
+    <script type="text/javascript" src="js/enemies/mob.js?v=36"></script>
+
+    <!-- world continued -->
+    <script type="text/javascript" src="js/world/floor.js?v=36"></script>
+    <script type="text/javascript" src="js/world/block.js?v=36"></script>
+    <script type="text/javascript" src="js/world/rubble.js?v=36"></script>
+    <script type="text/javascript" src="js/world/prop.js?v=36"></script>
+
+    <!-- player / scoring / run -->
+    <script type="text/javascript" src="js/player/player.js?v=36"></script>
+    <script type="text/javascript" src="js/world/flag.js?v=36"></script>
+    <script type="text/javascript" src="js/core/score.js?v=36"></script>
+    <script type="text/javascript" src="js/core/run.js?v=36"></script>
+    <script type="text/javascript" src="js/core/worlds.js?v=36"></script>
+
+    <!-- levels -->
+    <script type="text/javascript" src="js/levels/level.js?v=36"></script>
+    <script type="text/javascript" src="js/levels/kits.js?v=36"></script>
+    <script type="text/javascript" src="js/levels/world-kits.js?v=36"></script>
+    <script type="text/javascript" src="js/levels/11.js?v=36"></script>
+    <script type="text/javascript" src="js/levels/11tunnel.js?v=36"></script>
+    <script type="text/javascript" src="js/levels/12.js?v=36"></script>
+    <script type="text/javascript" src="js/levels/13.js?v=36"></script>
+
+    <!-- boot -->
+    <script type="text/javascript" src="js/core/game.js?v=36"></script>
+  </body>
+</html>

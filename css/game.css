@@ -1,0 +1,444 @@
+html, body {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+:root {
+  --bp-pink: #ff4fa3;
+  --bp-pink-soft: #ff9fd0;
+  --bp-pink-deep: #d63384;
+  --bp-purple: #7a2f6e;
+  --bp-plum: #5c1f55;
+  --bp-gold: #ffd84a;
+  --bp-cream: #fff7fb;
+  --bp-ink: #4a2040;
+}
+
+body {
+  font-family: "Fredoka", "Nunito", system-ui, sans-serif;
+  color: var(--bp-ink);
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 10%, rgba(255, 255, 255, 0.55) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 60% at 80% 0%, #ffb6d9 0%, transparent 55%),
+    linear-gradient(180deg, #ff7eb9 0%, #ff9fd0 42%, #ffe0f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.game-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.5vw, 14px);
+  padding: clamp(8px, 2vw, 16px);
+  width: 100%;
+  max-width: 100vw;
+  max-height: 100dvh;
+  box-sizing: border-box;
+}
+
+.game-brand {
+  text-align: center;
+  flex-shrink: 0;
+  padding-inline: 8px;
+}
+
+.game-brand h1 {
+  margin: 0;
+  font-family: "Fredoka", "Nunito", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(18px, 3.5vw, 34px);
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-shadow:
+    0 2px 0 var(--bp-purple),
+    0 0 18px rgba(255, 216, 74, 0.55);
+}
+
+.tagline {
+  margin: 8px 0 0;
+  font-size: clamp(11px, 1.6vw, 13px);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--bp-plum);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+  max-width: 36rem;
+}
+
+.game-frame {
+  position: relative;
+  line-height: 0;
+  flex: 0 1 auto;
+  border: clamp(5px, 1vw, 8px) solid #fff;
+  border-radius: clamp(14px, 2.4vw, 22px);
+  box-shadow:
+    0 0 0 3px rgba(255, 159, 208, 0.65),
+    0 8px 20px rgba(122, 47, 110, 0.14);
+  background: linear-gradient(180deg, #fff7fb, #ffe4f2);
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.game-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.35);
+}
+
+canvas {
+  display: block;
+  width: min(762px, calc(100vw - 48px));
+  height: auto;
+  max-width: 100%;
+  background-color: #000;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border-radius: calc(clamp(14px, 2.4vw, 22px) - 5px);
+  touch-action: none;
+}
+
+.game-hud-legend {
+  text-align: center;
+  max-width: min(762px, 100%);
+  flex-shrink: 0;
+  padding-inline: 8px;
+}
+
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(6px, 1.5vw, 14px);
+  font-size: clamp(11px, 1.5vw, 13px);
+  font-weight: 600;
+  color: var(--bp-plum);
+}
+
+.legend-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(180deg, #fff, #ffe4f2);
+  border: 2px solid #ff9fd0;
+  border-radius: 999px;
+  box-shadow: 0 2px 0 rgba(214, 51, 132, 0.35);
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.4em;
+  padding: 3px 6px;
+  font-family: inherit;
+  font-size: 0.95em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  color: var(--bp-plum);
+  background: linear-gradient(180deg, #fff, #ffe9a8);
+  border: 2px solid var(--bp-gold);
+  border-radius: 8px;
+  box-shadow: 0 2px 0 rgba(214, 51, 132, 0.25);
+}
+
+.hint {
+  margin: 12px 0 0;
+  font-size: clamp(10px, 1.4vw, 12px);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--bp-purple);
+}
+
+/* —— Touch controls (size via CSS vars set by JS) —— */
+.touch-controls {
+  --joy-size: clamp(88px, 22vmin, 140px);
+  --knob-size: clamp(38px, 10vmin, 58px);
+  --btn-jump: clamp(72px, 18vmin, 110px);
+  --btn-shoot: clamp(58px, 14vmin, 88px);
+  --btn-pause: clamp(40px, 9vmin, 52px);
+  --pad: max(10px, env(safe-area-inset-right), env(safe-area-inset-left));
+
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.touch-joy-zone {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46%;
+  height: 52%;
+  padding-left: env(safe-area-inset-left);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.touch-joy-base {
+  position: absolute;
+  left: 24%;
+  top: 58%;
+  width: var(--joy-size);
+  height: var(--joy-size);
+  margin: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 159, 208, 0.55);
+  box-shadow: inset 0 0 14px rgba(255, 79, 163, 0.15);
+  transform: translate(-50%, -50%);
+  opacity: 0.5;
+  transition: opacity 0.12s ease;
+}
+
+.touch-joy-base.is-active {
+  opacity: 0.88;
+}
+
+.touch-joy-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--knob-size);
+  height: var(--knob-size);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #ff9fd0 55%, #ff4fa3);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 3px 8px rgba(122, 47, 110, 0.28);
+  transform: translate(-50%, -50%);
+}
+
+.touch-actions {
+  position: absolute;
+  right: max(8px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  width: calc(var(--btn-jump) + var(--btn-shoot) * 0.55);
+  height: calc(var(--btn-jump) + var(--btn-shoot) * 0.35);
+  pointer-events: none;
+}
+
+.touch-btn {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: manipulation;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+  color: #fff;
+  font-family: "Fredoka", "Nunito", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 0 rgba(92, 31, 85, 0.45);
+  box-shadow:
+    0 4px 0 rgba(122, 47, 110, 0.28),
+    inset 0 2px 0 rgba(255, 255, 255, 0.4);
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0.9;
+}
+
+.touch-btn span {
+  display: block;
+  font-size: clamp(10px, 2.6vmin, 14px);
+}
+
+.touch-btn.is-active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow:
+    0 1px 0 rgba(122, 47, 110, 0.28),
+    inset 0 2px 8px rgba(92, 31, 85, 0.2);
+  opacity: 1;
+}
+
+.touch-btn-jump {
+  right: 4px;
+  bottom: 4px;
+  width: var(--btn-jump);
+  height: var(--btn-jump);
+  background: radial-gradient(circle at 35% 30%, #ffe08a, #ffd84a 45%, #f0a820);
+}
+
+.touch-btn-shoot {
+  right: calc(var(--btn-jump) * 0.92);
+  bottom: calc(var(--btn-jump) * 0.42);
+  width: var(--btn-shoot);
+  height: var(--btn-shoot);
+  background: radial-gradient(circle at 35% 30%, #ffb6e0, #ff4fa3 55%, #c42a7a);
+}
+
+.touch-btn-shoot span {
+  font-size: clamp(9px, 2.2vmin, 12px);
+}
+
+.touch-btn-pause {
+  top: max(8px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
+  width: var(--btn-pause);
+  height: var(--btn-pause);
+  font-size: clamp(14px, 3.5vmin, 18px);
+  line-height: 1;
+  background: radial-gradient(circle at 35% 30%, #fff, #e8b4dc 60%, #9a4a8a);
+  opacity: 0.82;
+}
+
+/* —— Phones (portrait) —— */
+@media (max-width: 700px) {
+  .tagline,
+  .hint {
+    display: none;
+  }
+
+  .game-screen {
+    padding: 6px;
+    gap: 8px;
+  }
+
+  .game-brand h1 {
+    font-size: clamp(16px, 5.5vw, 22px);
+  }
+
+  .legend-row {
+    gap: 6px;
+  }
+
+  .legend-row span {
+    padding: 4px 8px;
+  }
+
+  .game-frame {
+    border-width: 5px;
+    border-radius: 12px;
+  }
+}
+
+/* —— Tablets / iPad —— */
+@media (min-width: 701px) and (max-width: 1180px) {
+  .game-screen {
+    padding: clamp(10px, 2vw, 20px);
+  }
+
+  .touch-controls {
+    --joy-size: clamp(110px, 18vmin, 150px);
+    --knob-size: clamp(46px, 8vmin, 62px);
+    --btn-jump: clamp(90px, 15vmin, 120px);
+    --btn-shoot: clamp(72px, 12vmin, 96px);
+  }
+}
+
+/* —— Compact landscape phones —— */
+@media (orientation: landscape) and (max-height: 480px) {
+  .game-brand,
+  .game-hud-legend {
+    display: none;
+  }
+
+  .game-screen {
+    padding: 0;
+    gap: 0;
+    max-height: 100dvh;
+  }
+
+  .game-frame {
+    border-width: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  canvas {
+    border-radius: 0;
+  }
+}
+
+/* —— Touch / fullscreen play mode —— */
+body.touch-ui,
+body.play-compact {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 0%, #ff9fd0 0%, transparent 55%),
+    linear-gradient(180deg, #7a2f6e 0%, #4a2040 55%, #2a1428 100%);
+  padding: 0;
+}
+
+body.touch-ui .game-screen,
+body.play-compact .game-screen {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  gap: 0;
+  justify-content: center;
+}
+
+body.touch-ui .game-brand,
+body.touch-ui .game-hud-legend,
+body.play-compact .game-brand,
+body.play-compact .game-hud-legend {
+  display: none;
+}
+
+body.touch-ui .game-frame,
+body.play-compact .game-frame {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #000;
+  width: auto;
+  max-width: 100vw;
+  max-height: 100dvh;
+  overflow: visible;
+}
+
+body.touch-ui .game-frame::before,
+body.play-compact .game-frame::before {
+  display: none;
+}
+
+body.touch-ui canvas,
+body.play-compact canvas {
+  margin: 0 auto;
+  border-radius: 0;
+  /* exact size applied by JS fitStage() */
+}
+
+/* iPad landscape: slightly inset controls from edges */
+@media (min-width: 900px) and (orientation: landscape) {
+  .touch-joy-zone {
+    width: 40%;
+    height: 48%;
+  }
+
+  .touch-actions {
+    right: max(24px, env(safe-area-inset-right));
+    bottom: max(28px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .touch-controls {
+    --joy-size: 82px;
+    --knob-size: 36px;
+    --btn-jump: 68px;
+    --btn-shoot: 54px;
+  }
+
+  .touch-btn-shoot {
+    right: calc(var(--btn-jump) * 0.85);
+  }
+}
