@@ -253,11 +253,11 @@ function init() {
     overworld: new Audio('sounds/aboveground_bgm.ogg'),
     underground: new Audio('sounds/underground_bgm.ogg'),
     clear: new Audio('sounds/stage_clear.wav'),
-    death: new Audio('sounds/mariodie.wav')
+    death: new Audio('sounds/bigpotato_dead.wav?v=37')
   };
   sounds = {
-    smallJump: new Audio('sounds/jump-small.wav'),
-    bigJump: new Audio('sounds/jump-super.wav'),
+    smallJump: new Audio('sounds/bigpotato_jump.wav?v=37'),
+    bigJump: new Audio('sounds/bigpotato_jump.wav?v=37'),
     breakBlock: new Audio('sounds/breakblock.wav'),
     bump: new Audio('sounds/bump.wav'),
     coin: new Audio('sounds/coin.wav'),
