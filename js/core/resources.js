@@ -72,40 +72,47 @@
     return resourceCache[url];
   }
 
-  // Full-image scale baked once (desert tiles → 16×16, etc.)
+  // Match game.js ctx.scale(3,3) so baked sprites map 1:1 to canvas pixels
+  var BAKE_SCALE = 3;
+
+  // Full-image scale baked once (desert tiles → sharp display size)
   function getScaled(url, dw, dh) {
-    var key = url + '@' + dw + 'x' + dh;
+    var bw = Math.max(1, Math.round(dw * BAKE_SCALE));
+    var bh = Math.max(1, Math.round(dh * BAKE_SCALE));
+    var key = url + '@' + bw + 'x' + bh;
     if (Object.prototype.hasOwnProperty.call(scaledCache, key)) {
       return scaledCache[key];
     }
     var img = resourceCache[url];
     if (!img || !img.width) return null;
     var canvas = document.createElement('canvas');
-    canvas.width = dw;
-    canvas.height = dh;
+    canvas.width = bw;
+    canvas.height = bh;
     var c = canvas.getContext('2d');
     c.imageSmoothingEnabled = true;
-    if (c.imageSmoothingQuality) c.imageSmoothingQuality = 'medium';
-    c.drawImage(img, 0, 0, dw, dh);
+    if (c.imageSmoothingQuality) c.imageSmoothingQuality = 'high';
+    c.drawImage(img, 0, 0, bw, bh);
     scaledCache[key] = canvas;
     return canvas;
   }
 
-  // Crop + scale baked once (Big Potato atlas frames, enemy strip frames)
+  // Crop + scale baked once at canvas pixel size (Big Potato / enemy frames)
   function getRegionScaled(url, sx, sy, sw, sh, dw, dh) {
-    var key = [url, sx | 0, sy | 0, sw | 0, sh | 0, dw | 0, dh | 0].join('|');
+    var bw = Math.max(1, Math.round(dw * BAKE_SCALE));
+    var bh = Math.max(1, Math.round(dh * BAKE_SCALE));
+    var key = [url, sx | 0, sy | 0, sw | 0, sh | 0, bw, bh].join('|');
     if (Object.prototype.hasOwnProperty.call(regionCache, key)) {
       return regionCache[key];
     }
     var img = resourceCache[url];
     if (!img || !img.width) return null;
     var canvas = document.createElement('canvas');
-    canvas.width = dw;
-    canvas.height = dh;
+    canvas.width = bw;
+    canvas.height = bh;
     var c = canvas.getContext('2d');
     c.imageSmoothingEnabled = true;
-    if (c.imageSmoothingQuality) c.imageSmoothingQuality = 'medium';
-    c.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh);
+    if (c.imageSmoothingQuality) c.imageSmoothingQuality = 'high';
+    c.drawImage(img, sx, sy, sw, sh, 0, 0, bw, bh);
     regionCache[key] = canvas;
     return canvas;
   }

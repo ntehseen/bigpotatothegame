@@ -104,8 +104,8 @@ canvas {
   height: auto;
   max-width: 100%;
   background-color: #000;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+  /* Painted desert art — avoid pixelated CSS stretch (looks soft/muddy) */
+  image-rendering: auto;
   border-radius: calc(clamp(14px, 2.4vw, 22px) - 5px);
   touch-action: none;
 }

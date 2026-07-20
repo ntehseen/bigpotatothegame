@@ -97,14 +97,17 @@
       if (!src) return;
 
       ctx.save();
+      // Baked bitmaps are BAKE_SCALE× larger; draw into logical dw×dh so
+      // they map 1:1 onto the scaled canvas buffer (sharp, not soft).
+      ctx.imageSmoothingEnabled = false;
       if (!baked) ctx.imageSmoothingEnabled = !!this.smooth;
       if (this.flipX) {
         ctx.translate(dx + dw, dy);
         ctx.scale(-1, 1);
-        if (baked) ctx.drawImage(src, 0, 0);
+        if (baked) ctx.drawImage(src, 0, 0, dw, dh);
         else ctx.drawImage(src, sx, sy, sw, sh, 0, 0, dw, dh);
       } else if (baked) {
-        ctx.drawImage(src, dx, dy);
+        ctx.drawImage(src, dx, dy, dw, dh);
       } else {
         ctx.drawImage(src, sx, sy, sw, sh, dx, dy, dw, dh);
       }
@@ -132,18 +135,19 @@
     var sh = this.srcSize ? this.srcSize[1] : this.size[1];
     x += frame * sw;
 
-    // Full-image world tiles: draw pre-baked 16×16 (etc.) canvases
+    // Full-image world tiles: draw pre-baked canvases into logical size
     if (this.bakeScale && this.srcSize && frame === 0 && this.speed === 0) {
       var tile = resources.getScaled && resources.getScaled(this.img, dw, dh);
       if (tile) {
+        ctx.imageSmoothingEnabled = false;
         if (this.flipX) {
           ctx.save();
           ctx.translate(dx + dw, dy);
           ctx.scale(-1, 1);
-          ctx.drawImage(tile, 0, 0);
+          ctx.drawImage(tile, 0, 0, dw, dh);
           ctx.restore();
         } else {
-          ctx.drawImage(tile, dx, dy);
+          ctx.drawImage(tile, dx, dy, dw, dh);
         }
         return;
       }
@@ -153,14 +157,15 @@
     if (this.srcSize && resources.getRegionScaled) {
       var strip = resources.getRegionScaled(this.img, x, y, sw, sh, dw, dh);
       if (strip) {
+        ctx.imageSmoothingEnabled = false;
         if (this.flipX) {
           ctx.save();
           ctx.translate(dx + dw, dy);
           ctx.scale(-1, 1);
-          ctx.drawImage(strip, 0, 0);
+          ctx.drawImage(strip, 0, 0, dw, dh);
           ctx.restore();
         } else {
-          ctx.drawImage(strip, dx, dy);
+          ctx.drawImage(strip, dx, dy, dw, dh);
         }
         return;
       }
