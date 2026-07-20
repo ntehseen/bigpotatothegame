@@ -53,7 +53,7 @@
       return 'Popup blocked — allow popups for this site, or try again.';
     }
     if (code === 'auth/unauthorized-domain') {
-      return 'Domain not authorized in Firebase (localhost should be listed).';
+      return 'This site’s domain is not authorized in Firebase. Add it under Authentication → Settings → Authorized domains (e.g. your-site.netlify.app).';
     }
     if (code === 'auth/operation-not-allowed') {
       return 'Enable Google under Firebase → Authentication → Sign-in method.';

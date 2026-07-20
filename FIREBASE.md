@@ -21,7 +21,13 @@ Login (Google + Discord) and the global leaderboard need a Firebase project.
   4. In Firebase, create OIDC/custom provider with Discord Client ID + Secret
   5. Set `FIREBASE_DISCORD_PROVIDER_ID` in `firebase-config.js` to match (often `oidc.discord`)
 
-**Authorized domains:** `localhost` and your deploy host (e.g. GitHub Pages domain).
+**Authorized domains** (Authentication → Settings → Authorized domains):
+
+- `localhost` (local testing)
+- Your Netlify host, e.g. `yoursite.netlify.app` (no `https://`)
+- Any custom domain you use (e.g. `bigpotato.example.com`)
+
+Without the deploy host listed, Google sign-in fails with `auth/unauthorized-domain`.
 
 OAuth will not work from `file://` — serve with a local server:
 
