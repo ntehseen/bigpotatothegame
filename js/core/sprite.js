@@ -13,21 +13,22 @@
   }
 
   // Draw a full image scaled to display size (for desert tiles/props).
+  // Scale is baked once via resources.getScaled — no per-frame filtering.
   Mario.scaledSprite = function(img, displayW, displayH, srcW, srcH) {
     var sprite = new Mario.Sprite(img, [0, 0], [displayW, displayH], 0);
     sprite.srcSize = [srcW, srcH];
-    sprite.smooth = true;
+    sprite.smooth = false;
+    sprite.bakeScale = true;
     return sprite;
   };
 
   // Big Potato atlas-backed animated sprite
-  // Source art is painted (not NES pixel art) — smooth scale looks natural
   Mario.potatoSprite = function() {
     var sprite = new Mario.Sprite('sprites/bigpotato-atlas.png?v=30', [0, 0], [20, 30], 8, [0,1,2,3,4,5,6,7]);
     sprite.atlas = true;
     sprite.animName = 'idle';
     sprite.flipX = false;
-    sprite.smooth = true;
+    sprite.smooth = false;
     sprite.loop = true;
     return sprite;
   };
@@ -58,10 +59,12 @@
   }
 
   Sprite.prototype.render = function(ctx, posx, posy, vX, vY) {
-    var img = resources.get(this.img);
-    if (!img) return;
+    var dx = Math.round(posx - vX);
+    var dy = Math.round(posy - vY);
+    var dw = this.size[0];
+    var dh = this.size[1];
 
-    // Atlas animation path (Big Potato)
+    // Atlas animation path (Big Potato) — bake each frame to draw size once
     if (this.atlas && Mario.BigPotatoAnims) {
       var meta = Mario.BigPotatoAnims;
       var info = meta.anims[this.animName] || meta.anims.idle;
@@ -80,7 +83,6 @@
       var sy = info.row * cell;
       var sw = cell;
       var sh = cell;
-      // Draw content bounds (not empty cell padding) so proportions look normal
       if (info.rects && info.rects[idx]) {
         var r = info.rects[idx];
         sx += r[0];
@@ -88,19 +90,23 @@
         sw = r[2];
         sh = r[3];
       }
-      var dx = Math.round(posx - vX);
-      var dy = Math.round(posy - vY);
-      var dw = this.size[0];
-      var dh = this.size[1];
+
+      var baked = resources.getRegionScaled &&
+        resources.getRegionScaled(this.img, sx, sy, sw, sh, dw, dh);
+      var src = baked || resources.get(this.img);
+      if (!src) return;
 
       ctx.save();
-      ctx.imageSmoothingEnabled = !!this.smooth;
+      if (!baked) ctx.imageSmoothingEnabled = !!this.smooth;
       if (this.flipX) {
         ctx.translate(dx + dw, dy);
         ctx.scale(-1, 1);
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh);
+        if (baked) ctx.drawImage(src, 0, 0);
+        else ctx.drawImage(src, sx, sy, sw, sh, 0, 0, dw, dh);
+      } else if (baked) {
+        ctx.drawImage(src, dx, dy);
       } else {
-        ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+        ctx.drawImage(src, sx, sy, sw, sh, dx, dy, dw, dh);
       }
       ctx.restore();
       return;
@@ -122,18 +128,50 @@
 
     var x = this.pos[0];
     var y = this.pos[1];
-
     var sw = this.srcSize ? this.srcSize[0] : this.size[0];
     var sh = this.srcSize ? this.srcSize[1] : this.size[1];
     x += frame * sw;
 
+    // Full-image world tiles: draw pre-baked 16×16 (etc.) canvases
+    if (this.bakeScale && this.srcSize && frame === 0 && this.speed === 0) {
+      var tile = resources.getScaled && resources.getScaled(this.img, dw, dh);
+      if (tile) {
+        if (this.flipX) {
+          ctx.save();
+          ctx.translate(dx + dw, dy);
+          ctx.scale(-1, 1);
+          ctx.drawImage(tile, 0, 0);
+          ctx.restore();
+        } else {
+          ctx.drawImage(tile, dx, dy);
+        }
+        return;
+      }
+    }
+
+    // Animated strips (enemies/items): bake each source frame once
+    if (this.srcSize && resources.getRegionScaled) {
+      var strip = resources.getRegionScaled(this.img, x, y, sw, sh, dw, dh);
+      if (strip) {
+        if (this.flipX) {
+          ctx.save();
+          ctx.translate(dx + dw, dy);
+          ctx.scale(-1, 1);
+          ctx.drawImage(strip, 0, 0);
+          ctx.restore();
+        } else {
+          ctx.drawImage(strip, dx, dy);
+        }
+        return;
+      }
+    }
+
+    var img = resources.get(this.img);
+    if (!img) return;
+
     if (this.smooth) ctx.imageSmoothingEnabled = true;
 
     if (this.srcSize) {
-      var dx = Math.round(posx - vX);
-      var dy = Math.round(posy - vY);
-      var dw = this.size[0];
-      var dh = this.size[1];
       if (this.flipX) {
         ctx.save();
         ctx.translate(dx + dw, dy);
@@ -147,7 +185,7 @@
       ctx.drawImage(
         img,
         x + (1/3), y + (1/3), this.size[0] - (2/3), this.size[1] - (2/3),
-        Math.round(posx - vX), Math.round(posy - vY),
+        dx, dy,
         this.size[0], this.size[1]
       );
     }
@@ -171,7 +209,7 @@
       frames
     );
     sprite.srcSize = cell;
-    sprite.smooth = true;
+    sprite.smooth = false;
     sprite.flipX = false;
     sprite.once = (anim === 'die');
     return sprite;

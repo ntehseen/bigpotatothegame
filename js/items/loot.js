@@ -35,7 +35,7 @@
     type = typeof type === 'string' ? Mario.LootById[type] : type;
     type = type || Mario.LootTypes[0];
     var sprite = new Mario.Sprite(type.file, [0, 0], [16, 16], 8, [0, 1, 2, 3]);
-    sprite.smooth = true;
+    sprite.smooth = false;
     return sprite;
   };
 

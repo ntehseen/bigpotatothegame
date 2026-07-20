@@ -45,15 +45,12 @@ var vX = 0,
     vWidth = 256,
     vHeight = 240;
 
-//load our images
+//load our images (skip unused multi‑MB legacy sheets — they only hurt memory/FPS)
 resources.load([
-  'sprites/player.png',
   'sprites/enemy.png',
   'sprites/tiles.png',
-  'sprites/playerl.png',
   'sprites/items.png',
   'sprites/enemyr.png',
-  'sprites/bigpotato.png',
   'sprites/bigpotato-hud.png',
   'sprites/bigpotato-atlas.png?v=30',
   'sprites/desert/bg.png',
@@ -385,6 +382,8 @@ var musicPausedTrack = null;
 function main() {
   var now = Date.now();
   var dt = (now - lastTime) / 1000.0;
+  // Cap so a hitch doesn't explode physics/updates and feel even slower
+  if (dt > 0.05) dt = 0.05;
 
   handlePauseInput();
   if (!paused) {
